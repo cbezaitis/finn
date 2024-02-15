@@ -535,9 +535,9 @@ class TestEnd2End:
     def test_convert_to_hw_layers(self, topology, wbits, abits, board):
         prev_chkpt_name = get_checkpoint_name(topology, wbits, abits, "streamline")
         model = load_test_checkpoint_or_skip(prev_chkpt_name)
-        if topology == "tfc" and wbits == 1 and abits == 1:
-            # use standalone thresholds for tfc-w1a1 to also exercise that option
-            model = model.transform(to_hw.InferThresholdingLayer())
+        # if topology == "tfc" and wbits == 1 and abits == 1:
+        # use standalone thresholds for tfc-w1a1 to also exercise that option
+        model = model.transform(to_hw.InferThresholdingLayer())
         # needed for bipolar MatMul layers
         model = model.transform(to_hw.InferBinaryMatrixVectorActivation(mem_mode))
         # needed for non-bipolar MatMul layers
@@ -559,7 +559,7 @@ class TestEnd2End:
         exp_layer_counts = {
             "tfc": [
                 ("Reshape", 1),
-                ("Thresholding", 1),
+                ("Thresholding", 4),
                 ("MatrixVectorActivation", 4),
                 ("LabelSelect", 1),
             ],
@@ -571,13 +571,13 @@ class TestEnd2End:
             ],
             "lfc": [
                 ("Reshape", 1),
-                ("Thresholding", 1),
+                ("Thresholding", 4),
                 ("MatrixVectorActivation", 4),
                 ("LabelSelect", 1),
             ],
             "cnv": [
                 ("Transpose", 1),
-                ("Thresholding", 1),
+                ("Thresholding", 9),
                 ("ConvolutionInputGenerator", 6),
                 ("MatrixVectorActivation", 9),
                 ("StreamingMaxPool", 2),
@@ -606,7 +606,7 @@ class TestEnd2End:
         exp_layer_counts = {
             "tfc": [
                 ("Reshape", 1),
-                ("Thresholding_hls", 1),
+                ("Thresholding_hls", 4),
                 ("MatrixVectorActivation_hls", 4),
                 ("LabelSelect_hls", 1),
             ],
@@ -618,13 +618,13 @@ class TestEnd2End:
             ],
             "lfc": [
                 ("Reshape", 1),
-                ("Thresholding_hls", 1),
+                ("Thresholding_hls", 4),
                 ("MatrixVectorActivation_hls", 4),
                 ("LabelSelect_hls", 1),
             ],
             "cnv": [
                 ("Transpose", 1),
-                ("Thresholding_hls", 1),
+                ("Thresholding_hls", 9),
                 ("ConvolutionInputGenerator_hls", 6),
                 ("MatrixVectorActivation_hls", 9),
                 ("StreamingMaxPool_hls", 2),
